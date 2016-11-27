@@ -12,6 +12,10 @@ checkout_realizado = Signal(providing_args=['data'])
 checkout_realizado_com_sucesso = Signal(providing_args=['data'])
 checkout_realizado_com_erro = Signal(providing_args=['data'])
 
+pre_approvals_realizado = Signal(providing_args=['data'])
+pre_approvals_realizado_com_sucesso = Signal(providing_args=['data'])
+pre_approvals_realizado_com_erro = Signal(providing_args=['data'])
+
 notificacao_recebida = Signal(providing_args=['transaction'])
 notificacao_status_aguardando = Signal(providing_args=['transaction'])
 notificacao_status_em_analise = Signal(providing_args=['transaction'])
@@ -76,3 +80,18 @@ def update_transaction(sender, transaction, **kwargs):
         status=TRANSACTION_STATUS[trans.get('status')],
         date=parse(trans.get('lastEventDate'))
     )
+
+def save_pre_approvals(sender, data, **kwargs):
+    from pagseguro.models import PreApprovalsRequest
+
+    pre_approvals_request = PreApprovalsRequest(
+        date=data.get('date'),
+        success=data.get('success')
+    )
+
+    if pre_approvals_request.success:
+        pre_approvals_request.code = data.get('code')
+    else:
+        pre_approvals_request.message = data.get('message')
+
+    pre_approvals_request.save()

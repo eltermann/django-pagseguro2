@@ -255,6 +255,27 @@ Efetue o checkout transparent::
     >>> data = api.checkout()
 
 
+==============================================
+Trabalhando com a API de Assinaturas
+==============================================
+
+from pagseguro.api import PagSeguroApiPreApprovals
+from django.utils import timezone
+
+pagseguro_api = PagSeguroApiPreApprovals(reference='id-unico-de-referencia-do-seu-sistema')
+final_date = timezone.now() + timezone.timedelta(days=100)
+pre_approval_data = {
+    'name': 'Seguro contra roubo de Notebook',
+    'amount_per_payment': 100,
+    'period': 'Monthly',
+    'final_date': final_date,
+    'max_total_amount': 2400,
+    'charge': 'auto',
+    'details': 'Todo dia 28 será cobrado o valor de R100,00',
+}
+pagseguro_api.create_plan(**pre_approval_data)
+
+
 ===================================
 Trabalhando com Signals de checkout
 ===================================
